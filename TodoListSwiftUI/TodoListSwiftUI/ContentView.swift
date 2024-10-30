@@ -8,14 +8,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject var fetch = FetchUsers()
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Text("Total result: \(fetch.items.count)")
+            
+            if fetch.items.isEmpty {
+                ProgressView().onAppear {
+                    fetch.loadData()
+                }
+            } else {
+                List(fetch.items, id: \.id) { user in
+                    Link(destination: user.pageUrl()) {
+                        UserRowView(user: user)
+                            .foregroundStyle(.black)
+                    }
+                }
+            }
         }
-        .padding()
     }
 }
 
